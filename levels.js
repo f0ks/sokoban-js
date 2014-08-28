@@ -27,3 +27,6 @@ sokoban.level =
         ["G", "G", "G", "G", "G", "G", "G", "G", "G", "G", "G"],
 
     ];
+
+sokoban.xLength = sokoban.level.length;
+sokoban.yLength = sokoban.level[0].length;

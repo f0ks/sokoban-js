@@ -6,8 +6,8 @@ var sokoban = {
     _isLevelChanged: true, // re-parse level only id needed, not for each animation frame
 
     getPlayerPosition: function() {
-        for (var i=0; i<sokoban.level.length; i++) {
-            for (var j=0; j<sokoban.level[i].length; j++) {
+        for (var i=0; i < sokoban.xLength; i++) {
+            for (var j=0; j < sokoban.yLength; j++) {
                 if (sokoban.level[i][j] === "@" || sokoban.level[i][j] === "%") {
                     var position = {};
                     position.x = j;
@@ -21,8 +21,9 @@ var sokoban = {
 
     setPlayerPosition: function(position) {
         // delete old player position from map array
-        for (var i=0; i<sokoban.level.length; i++) {
-            for (var j=0; j<sokoban.level[i].length; j++){
+
+        for (var i=0; i < sokoban.xLength; i++) {
+            for (var j=0; j < sokoban.yLength; j++){
                 if (sokoban.level[i][j] === "@") {
                     sokoban.level[i][j] = "-";
                 }
@@ -112,7 +113,7 @@ var sokoban = {
         var curPosition = sokoban.getPlayerPosition(); 
         var isPushed = false;
 
-        if (curPosition.y < sokoban.level.length-1) {
+        if (curPosition.y < sokoban.xLength-1) {
             // check for obsticles
             if (
                 sokoban.level[curPosition.y+1][curPosition.x] !== "-" &&  
@@ -122,7 +123,7 @@ var sokoban = {
             ) {
                 // box
                 if (sokoban.level[curPosition.y+1][curPosition.x] === "B" &&
-                    curPosition.y + 1 < sokoban.level.length - 1 &&
+                    curPosition.y + 1 < sokoban.xLength - 1 &&
                     sokoban.level[curPosition.y+2][curPosition.x] === "-"
                      
                     ) {
@@ -135,7 +136,7 @@ var sokoban = {
 
                 // push box to spot
                 if (sokoban.level[curPosition.y+1][curPosition.x] === "B" &&
-                    curPosition.y + 1 < sokoban.level.length - 1 &&
+                    curPosition.y + 1 < sokoban.xLength - 1 &&
                     sokoban.level[curPosition.y+2][curPosition.x] === "*" &&
                     !isPushed
                     ) {
@@ -174,7 +175,7 @@ var sokoban = {
         var isPushed = false;
 
         // check for map right border
-        if (curPosition.x < sokoban.level[0].length-1) {
+        if (curPosition.x < sokoban.yLength-1) {
             // check for obsticles
             if (sokoban.level[curPosition.y][curPosition.x+1] !== "-" && 
                 sokoban.level[curPosition.y][curPosition.x+1] !== "*" &&
@@ -293,15 +294,15 @@ var sokoban = {
         var htmlView = "";
 
         // render html view
-        for (var i=0; i<sokoban.level.length; i++){
-            for (var j=0; j<sokoban.level[i].length; j++){
+        for (var i=0; i<sokoban.xLength; i++){
+            for (var j=0; j<sokoban.yLength; j++){
                 htmlView += sokoban.level[i][j] + " "; 
                 if (j == 8) {
                     htmlView += "<br>";
                 }
             }
         }
-        $('body code').html(htmlView);
+        $('code').html(htmlView);
 
         // render canvas view
         var curPosition = sokoban.getPlayerPosition(); 
@@ -331,8 +332,8 @@ var sokoban = {
 
         sokoban.scene.add(sokoban.player);
 
-        for (var i=0; i<sokoban.level.length; i++){
-            for (var j=0; j<sokoban.level[i].length; j++){
+        for (var i=0; i<sokoban.xLength; i++){
+            for (var j=0; j<sokoban.yLength; j++){
                 var cur_x = j * sokoban.CELL_SIZE;
                 var cur_y = i * sokoban.CELL_SIZE;
 
@@ -424,12 +425,9 @@ var sokoban = {
     },
 
     onLoad: function() {
+        var sceneWidth = sokoban.CELL_SIZE * sokoban.yLength; 
+        var sceneHeight = sokoban.CELL_SIZE * sokoban.xLength; 
 
-        var sceneWidth = sokoban.CELL_SIZE * sokoban.level[0].length; 
-        var sceneHeight = sokoban.CELL_SIZE * sokoban.level.length; 
-
-        console.log(sceneWidth);
-        console.log(sceneHeight);
 
         sokoban.scene = new plant.Scene({
             width: sceneWidth,
@@ -457,7 +455,7 @@ var sokoban = {
 
         sokoban.plantGameLoop = new plant.GameLoop({
             scene: sokoban.scene,
-            interval: 100 
+            interval: 150 
         });
 
 
@@ -482,9 +480,9 @@ var sokoban = {
 
 $.getScript("levels.js", function()
 {
-    console.log("load levels");
+    sokoban.onLoad();
 });
 
-window.addEventListener('load', sokoban.onLoad, false);
+//window.addEventListener('load', sokoban.onLoad, false);
 window.addEventListener('keydown', sokoban.keyDown, false);
 
