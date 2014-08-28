@@ -7,24 +7,27 @@ var sokoban = {
     // * - spot
     // $ - box on spot
     // % - player on spot
+    // G - grass
+    // D - block
     level: [
-        ["-", "-", "-", "-", "-", "-", "-", "-", "-"],
+        ["G", "G", "G", "G", "G", "G", "G", "G", "G", "G", "G"],
+        ["G", "G", "G", "D", "D", "D", "D", "D", "D", "D", "G"],
+        ["G", "G", "G", "D", "-", "-", "-", "-", "-", "D", "G"],
+        ["G", "G", "G", "D", "-", "-", "-", "-", "-", "D", "G"],
+        ["G", "D", "D", "D", "-", "-", "-", "-", "-", "D", "G"],
+        ["G", "D", "-", "*", "-", "-", "-", "-", "-", "D", "G"],
+        ["G", "D", "-", "-", "-", "D", "D", "-", "-", "D", "G"],
+        ["G", "D", "-", "-", "-", "D", "D", "-", "-", "D", "G"],
+        ["G", "D", "-", "B", "-", "-", "-", "-", "-", "D", "G"],
+        ["G", "D", "-", "-", "-", "-", "-", "-", "-", "D", "G"],
+        ["G", "D", "-", "-", "-", "-", "-", "-", "-", "D", "G"],
+        ["G", "D", "-", "-", "-", "-", "-", "-", "-", "D", "G"],
+        ["G", "D", "-", "@", "-", "-", "-", "D", "D", "D", "G"],
+        ["G", "D", "-", "-", "-", "-", "-", "D", "G", "G", "G"],
+        ["G", "D", "-", "-", "D", "D", "D", "D", "G", "G", "G"],
+        ["G", "D", "D", "D", "D", "G", "G", "G", "G", "G", "G"],
+        ["G", "G", "G", "G", "G", "G", "G", "G", "G", "G", "G"],
 
-        ["-", "-", "-", "-", "-", "-", "-", "-", "-"],
-
-        ["-", "-", "-", "-", "B", "-", "B", "-", "-"],
-
-        ["-", "-", "-", "-", "-", "-", "-", "-", "-"],
-
-        ["-", "-", "*", "-", "-", "*", "-", "B", "-"],
-
-        ["-", "-", "-", "-", "-", "-", "-", "-", "-"],
-
-        ["-", "-", "%", "-", "-", "-", "-", "-", "-"],
-
-        ["-", "B", "-", "-", "*", "-", "-", "-", "-"],
-
-        ["-", "-", "-", "-", "-", "-", "-", "-", "-"],
     ],
 
     _isLevelChanged: true, // re-parse level only id needed, not for each animation frame
@@ -348,6 +351,8 @@ var sokoban = {
         // create bg blocks
         var bg_blocks = [];
         sokoban.boxes = [];
+        sokoban.blocks = [];
+        sokoban.grass = [];
         sokoban.spots = [];
         sokoban.bspots = [];
 
@@ -359,7 +364,7 @@ var sokoban = {
                 var cur_y = i * sokoban.CELL_SIZE;
 
                 var cur_block = new plant.Sprite({
-                    src: 'grass.png',
+                    src: 'floor.png',
                     x: cur_x,
                     y: cur_y
                 });
@@ -373,8 +378,7 @@ var sokoban = {
                         src: "box.png",
                         zindex: 10,
                         x: cur_x,
-                        y: cur_y,
-                        color: "#ff9966",
+                        y: cur_y
                     });
                     
                     box.xCell = j;
@@ -382,6 +386,37 @@ var sokoban = {
 
                     sokoban.boxes.push(box);
                     sokoban.scene.add(sokoban.boxes[sokoban.boxes.length - 1]);
+                }
+
+                // grass
+                if (sokoban.level[i][j] == "G") {
+                    var grass = new plant.Sprite({
+                        src: "grass.png",
+                        zindex: 10,
+                        x: cur_x,
+                        y: cur_y
+                    });
+                    
+                    grass.xCell = j;
+                    grass.yCell = i;
+
+                    sokoban.grass.push(grass);
+                    sokoban.scene.add(sokoban.grass[sokoban.grass.length - 1]);
+                }
+                // block
+                if (sokoban.level[i][j] == "D") {
+                    var block = new plant.Sprite({
+                        src: "block.png",
+                        zindex: 10,
+                        x: cur_x,
+                        y: cur_y
+                    });
+                    
+                    block.xCell = j;
+                    block.yCell = i;
+
+                    sokoban.blocks.push(block);
+                    sokoban.scene.add(sokoban.blocks[sokoban.blocks.length - 1]);
                 }
 
                 // spot
@@ -417,11 +452,14 @@ var sokoban = {
 
     onLoad: function() {
 
-        var sceneWidth = sokoban.CELL_SIZE * sokoban.level.length; 
-        var sceneHeight = sokoban.CELL_SIZE * sokoban.level[0].length; 
+        var sceneWidth = sokoban.CELL_SIZE * sokoban.level[0].length; 
+        var sceneHeight = sokoban.CELL_SIZE * sokoban.level.length; 
+
+        console.log(sceneWidth);
+        console.log(sceneHeight);
 
         sokoban.scene = new plant.Scene({
-            width: sceneHeight,
+            width: sceneWidth,
             height: sceneHeight 
         });
 
