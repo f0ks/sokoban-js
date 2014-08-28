@@ -2,33 +2,6 @@ var sokoban = {
 
     CELL_SIZE: 30,
 
-    // @ - player
-    // B - box
-    // * - spot
-    // $ - box on spot
-    // % - player on spot
-    // G - grass
-    // D - block
-    level: [
-        ["G", "G", "G", "G", "G", "G", "G", "G", "G", "G", "G"],
-        ["G", "G", "G", "D", "D", "D", "D", "D", "D", "D", "G"],
-        ["G", "G", "G", "D", "-", "-", "-", "-", "-", "D", "G"],
-        ["G", "G", "G", "D", "-", "-", "-", "-", "-", "D", "G"],
-        ["G", "D", "D", "D", "-", "-", "-", "-", "-", "D", "G"],
-        ["G", "D", "-", "*", "-", "-", "-", "-", "-", "D", "G"],
-        ["G", "D", "-", "-", "-", "D", "D", "-", "-", "D", "G"],
-        ["G", "D", "-", "-", "-", "D", "D", "-", "-", "D", "G"],
-        ["G", "D", "-", "B", "-", "-", "-", "-", "-", "D", "G"],
-        ["G", "D", "-", "-", "-", "-", "-", "-", "-", "D", "G"],
-        ["G", "D", "-", "-", "-", "-", "-", "-", "-", "D", "G"],
-        ["G", "D", "-", "-", "-", "-", "-", "-", "-", "D", "G"],
-        ["G", "D", "-", "@", "-", "-", "-", "D", "D", "D", "G"],
-        ["G", "D", "-", "-", "-", "-", "-", "D", "G", "G", "G"],
-        ["G", "D", "-", "-", "D", "D", "D", "D", "G", "G", "G"],
-        ["G", "D", "D", "D", "D", "G", "G", "G", "G", "G", "G"],
-        ["G", "G", "G", "G", "G", "G", "G", "G", "G", "G", "G"],
-
-    ],
 
     _isLevelChanged: true, // re-parse level only id needed, not for each animation frame
 
@@ -506,6 +479,11 @@ var sokoban = {
     }
     
 };
+
+$.getScript("levels.js", function()
+{
+    console.log("load levels");
+});
 
 window.addEventListener('load', sokoban.onLoad, false);
 window.addEventListener('keydown', sokoban.keyDown, false);
