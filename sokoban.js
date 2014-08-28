@@ -259,7 +259,18 @@ var sokoban = {
     },
 
     renderView: function(options) {
+        var htmlView = "";
 
+        // render html view
+        for (var i=0; i<sokoban.level.length; i++){
+            for (var j=0; j<sokoban.level[i].length; j++){
+                htmlView += sokoban.level[i][j] + " "; 
+                if (j == 8) {
+                    htmlView += "<br>";
+                }
+            }
+        }
+        $('body code').html(htmlView);
 
         // render canvas view
         var curPosition = sokoban.getPlayerPosition(); 
