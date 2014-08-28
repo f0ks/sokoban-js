@@ -14,13 +14,13 @@ var sokoban = {
 
         ["-", "-", "-", "-", "B", "-", "B", "-", "-"],
 
-        ["-", "B", "-", "-", "-", "-", "-", "-", "-"],
+        ["-", "-", "-", "-", "-", "-", "-", "-", "-"],
 
         ["-", "-", "*", "-", "-", "*", "-", "B", "-"],
 
-        ["-", "-", "-", "B", "B", "-", "-", "-", "-"],
+        ["-", "-", "-", "-", "-", "-", "-", "-", "-"],
 
-        ["-", "-", "-", "B", "-", "-", "-", "-", "-"],
+        ["-", "-", "-", "-", "-", "-", "-", "-", "-"],
 
         ["-", "B", "-", "-", "*", "-", "-", "-", "-"],
 
@@ -287,11 +287,16 @@ var sokoban = {
 
         sokoban._isLevelChanged = false;
 
+        // clean scene's objects
+        sokoban.scene.nodes = [];
+
         // create bg blocks
         var bg_blocks = [];
         sokoban.boxes = [];
         sokoban.spots = [];
         sokoban.bspots = [];
+
+        sokoban.scene.add(sokoban.player);
 
         for (var i=0; i<sokoban.level.length; i++){
             for (var j=0; j<sokoban.level[i].length; j++){
@@ -311,6 +316,7 @@ var sokoban = {
                 if (sokoban.level[i][j] == "B") {
                     var box = new plant.Sprite({
                         src: "box.png",
+                        zindex: 10,
                         x: cur_x,
                         y: cur_y,
                         color: "#ff9966",
@@ -374,7 +380,7 @@ var sokoban = {
 
         sokoban.player = new plant.Sprite({
             src: "player.png",
-            zindex: 100,
+            zindex: 101,
             width: sokoban.CELL_SIZE,
             height: sokoban.CELL_SIZE,
             x: sokoban.curPositionCanvX,
@@ -388,7 +394,6 @@ var sokoban = {
             interval: 100 
         });
 
-        sokoban.scene.add(sokoban.player);
 
         sokoban.plantGameLoop.code = function() {
             sokoban.scene.update();
