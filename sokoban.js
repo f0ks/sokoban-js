@@ -11,6 +11,7 @@ var sokoban = {
         sokoban.xLength = sokoban.level.length;
         sokoban.yLength = sokoban.level[0].length;
 
+
         if (sokoban.isInitialized) {
             sokoban.setCanvasSize();
             sokoban._isLevelChanged = true;
@@ -52,9 +53,15 @@ var sokoban = {
 
         // check for win
         if (numberOfBoxes < 1) {
-            sokoban.curLevel++;
-            // load next level
-            sokoban.loadLevel(sokoban.curLevel);
+            if (sokoban.curLevel == sokoban.levels.length-1) {
+                // load first level 
+                sokoban.curLevel = 0;
+                sokoban.loadLevel(0);
+            } else {
+                // load next level
+                sokoban.curLevel++;
+                sokoban.loadLevel(sokoban.curLevel);
+            }
         }
 
         // and set a new position
@@ -121,10 +128,20 @@ var sokoban = {
                 if (sokoban.level[curPosition.y-1][curPosition.x] === "*") {
                     sokoban.isOnSpot = true;
                 }
-                if (sokoban.level[curPosition.y-1][curPosition.x] === "$") {
+                if (sokoban.level[curPosition.y-1][curPosition.x] === "$"
+                && sokoban.level[curPosition.y-2][curPosition.x] !== "D"
+                ) {
                     sokoban.level[curPosition.y-2][curPosition.x] = "B";
                     sokoban.isPushFromSpot = true;
                 }
+                
+                // dont pushbox from spot into wall
+                if (sokoban.level[curPosition.y-1][curPosition.x] === "$"
+                    && sokoban.level[curPosition.y-2][curPosition.x] === "D"
+                ) {
+                    curPosition.y++;
+                }
+  
                 curPosition.y--;
                 sokoban.setPlayerPosition(curPosition);
             }
@@ -183,10 +200,20 @@ var sokoban = {
                     sokoban.isOnSpot = true;
                 }
 
-                if (sokoban.level[curPosition.y+1][curPosition.x] === "$") {
+                if (sokoban.level[curPosition.y+1][curPosition.x] === "$"
+                    && sokoban.level[curPosition.y+2][curPosition.x] !== "D"
+                ) {
                     sokoban.level[curPosition.y+2][curPosition.x] = "B";
                     sokoban.isPushFromSpot = true;
                 }
+
+                // dont pushbox from spot into wall
+                if (sokoban.level[curPosition.y+1][curPosition.x] === "$"
+                    && sokoban.level[curPosition.y+2][curPosition.x] === "D"
+                ) {
+                    curPosition.y--;
+                }
+
                 curPosition.y++;
                 sokoban.setPlayerPosition(curPosition);
             }
@@ -245,9 +272,18 @@ var sokoban = {
                 if (sokoban.level[curPosition.y][curPosition.x+1] === "*") {
                     sokoban.isOnSpot = true;
                 }
-                if (sokoban.level[curPosition.y][curPosition.x+1] === "$") {
+                if (sokoban.level[curPosition.y][curPosition.x+1] === "$" &&
+                    sokoban.level[curPosition.y][curPosition.x+2] !== "D"
+                ) {
                     sokoban.level[curPosition.y][curPosition.x+2] = "B";
                     sokoban.isPushFromSpot = true;
+                }
+
+                // dont pushbox from spot into wall
+                if (sokoban.level[curPosition.y][curPosition.x+1] === "$" &&
+                    sokoban.level[curPosition.y][curPosition.x+2] === "D"
+                ) {
+                    curPosition.x--;
                 }
                 curPosition.x++;
                 sokoban.setPlayerPosition(curPosition);
@@ -301,9 +337,18 @@ var sokoban = {
                 if (sokoban.level[curPosition.y][curPosition.x-1] === "*") {
                     sokoban.isOnSpot = true;
                 }
-                if (sokoban.level[curPosition.y][curPosition.x-1] === "$") {
+                if (sokoban.level[curPosition.y][curPosition.x-1] === "$" &&
+                    sokoban.level[curPosition.y][curPosition.x-2] !== "D"
+                ) {
                     sokoban.level[curPosition.y][curPosition.x-2] = "B";
                     sokoban.isPushFromSpot = true;
+                }
+
+                // dont pushbox from spot into wall
+                if (sokoban.level[curPosition.y][curPosition.x-1] === "$" &&
+                    sokoban.level[curPosition.y][curPosition.x-2] === "D"
+                ) {
+                    curPosition.x++;
                 }
                 curPosition.x--;
                 sokoban.setPlayerPosition(curPosition, true);
