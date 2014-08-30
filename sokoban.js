@@ -2,8 +2,21 @@ var sokoban = {
 
     CELL_SIZE: 30,
 
-
     _isLevelChanged: true, // re-parse level only id needed, not for each animation frame
+    isInitialized: false,
+    curLevel: 0,
+
+    loadLevel: function(level) {
+        sokoban.level = sokoban.levels[level];
+        sokoban.xLength = sokoban.level.length;
+        sokoban.yLength = sokoban.level[0].length;
+
+        if (sokoban.isInitialized) {
+            sokoban.setCanvasSize();
+            sokoban._isLevelChanged = true;
+            sokoban.renderView();
+        }
+    },
 
     getPlayerPosition: function() {
         for (var i=0; i < sokoban.xLength; i++) {
@@ -21,9 +34,12 @@ var sokoban = {
 
     setPlayerPosition: function(position) {
         // delete old player position from map array
-
+        var numberOfBoxes = 0;
         for (var i=0; i < sokoban.xLength; i++) {
             for (var j=0; j < sokoban.yLength; j++){
+                if (sokoban.level[i][j] === "B") {
+                    numberOfBoxes++;
+                }
                 if (sokoban.level[i][j] === "@") {
                     sokoban.level[i][j] = "-";
                 }
@@ -31,6 +47,14 @@ var sokoban = {
                     sokoban.level[i][j] = "*";
                 }
             }
+        }
+
+
+        // check for win
+        if (numberOfBoxes < 1) {
+            sokoban.curLevel++;
+            // load next level
+            sokoban.loadLevel(sokoban.curLevel);
         }
 
         // and set a new position
@@ -44,10 +68,12 @@ var sokoban = {
             
         sokoban.isOnSpot = false;
         sokoban.isPushFromSpot = false;
+
             
         // and re-render the view
         sokoban.renderView();
     },
+
 
     goUp: function() {
         sokoban._isLevelChanged = true;
@@ -424,23 +450,23 @@ var sokoban = {
     
     },
 
-    onLoad: function() {
+    setCanvasSize: function(width, height) {
         var sceneWidth = sokoban.CELL_SIZE * sokoban.yLength; 
         var sceneHeight = sokoban.CELL_SIZE * sokoban.xLength; 
+        sokoban.scene.htmlNode.width = sceneWidth;
+        sokoban.scene.htmlNode.height = sceneHeight;
+    },
 
+    onLoad: function() {
 
-        sokoban.scene = new plant.Scene({
-            width: sceneWidth,
-            height: sceneHeight 
-        });
-
+        sokoban.scene = new plant.Scene();
+        sokoban.setCanvasSize();
 
         // calculate player's position on canvas
          
         var curPosition = sokoban.getPlayerPosition(); 
         sokoban.curPositionCanvX = curPosition.x * sokoban.CELL_SIZE;
         sokoban.curPositionCanvY = curPosition.y * sokoban.CELL_SIZE;
-
 
         sokoban.player = new plant.Sprite({
             src: "player.png",
@@ -450,8 +476,6 @@ var sokoban = {
             x: sokoban.curPositionCanvX,
             y: sokoban.curPositionCanvY
         });
-
-
 
         sokoban.plantGameLoop = new plant.GameLoop({
             scene: sokoban.scene,
@@ -467,6 +491,8 @@ var sokoban = {
 
         sokoban.renderView();
 
+        sokoban.isInitialized = true;
+
     },
 
     keyDown: function(e) {
@@ -478,8 +504,8 @@ var sokoban = {
     
 };
 
-$.getScript("levels.js", function()
-{
+$.getScript("levels.js", function() {
+    sokoban.loadLevel(sokoban.curLevel);
     sokoban.onLoad();
 });
 
