@@ -409,7 +409,7 @@ var sokoban = {
                 var cur_y = i * sokoban.CELL_SIZE;
 
                 var cur_block = new plant.Sprite({
-                    src: 'floor.png',
+                    src: 'gfx/floor.png',
                     x: cur_x,
                     y: cur_y
                 });
@@ -420,7 +420,7 @@ var sokoban = {
                 // box
                 if (sokoban.level[i][j] == "B") {
                     var box = new plant.Sprite({
-                        src: "box.png",
+                        src: "gfx/box.png",
                         zindex: 10,
                         x: cur_x,
                         y: cur_y
@@ -436,7 +436,7 @@ var sokoban = {
                 // grass
                 if (sokoban.level[i][j] == "G") {
                     var grass = new plant.Sprite({
-                        src: "grass.png",
+                        src: "gfx/grass.png",
                         zindex: 10,
                         x: cur_x,
                         y: cur_y
@@ -451,7 +451,7 @@ var sokoban = {
                 // block
                 if (sokoban.level[i][j] == "D") {
                     var block = new plant.Sprite({
-                        src: "block.png",
+                        src: "gfx/block.png",
                         zindex: 10,
                         x: cur_x,
                         y: cur_y
@@ -467,7 +467,7 @@ var sokoban = {
                 // spot
                 if (sokoban.level[i][j] == "*") {
                     var spot = new plant.Sprite({
-                        src: "spot.png",
+                        src: "gfx/spot.png",
                         x: cur_x,
                         y: cur_y,
                         width: sokoban.CELL_SIZE,
@@ -480,7 +480,7 @@ var sokoban = {
                 // box on spot
                 if (sokoban.level[i][j] == "$") {
                     var bspot = new plant.Sprite({
-                        src: "bspot.png",
+                        src: "gfx/bspot.png",
                         x: cur_x,
                         y: cur_y,
                         zindex: 100,
@@ -514,7 +514,7 @@ var sokoban = {
         sokoban.curPositionCanvY = curPosition.y * sokoban.CELL_SIZE;
 
         sokoban.player = new plant.Sprite({
-            src: "player.png",
+            src: "gfx/player.png",
             zindex: 101,
             width: sokoban.CELL_SIZE,
             height: sokoban.CELL_SIZE,
