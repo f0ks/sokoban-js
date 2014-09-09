@@ -11,7 +11,6 @@ var sokoban = {
         sokoban.xLength = sokoban.level.length;
         sokoban.yLength = sokoban.level[0].length;
 
-
         if (sokoban.isInitialized) {
             sokoban.setCanvasSize();
             sokoban._isLevelChanged = true;
@@ -61,6 +60,8 @@ var sokoban = {
                 // load next level
                 sokoban.curLevel++;
                 sokoban.loadLevel(sokoban.curLevel);
+                var position = sokoban.getPlayerPosition();
+                sokoban.setPlayerPosition(position);
             }
         }
 
