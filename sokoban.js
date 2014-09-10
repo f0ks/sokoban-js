@@ -54,6 +54,7 @@ var sokoban = {
         if (numberOfBoxes < 1) {
             if (sokoban.curLevel == sokoban.levels.length-1) {
                 // load first level 
+                sokoban.loadLevels();
                 sokoban.curLevel = 0;
                 sokoban.loadLevel(0);
             } else {
@@ -505,6 +506,7 @@ var sokoban = {
 
     onLoad: function() {
 
+
         sokoban.scene = new plant.Scene();
         sokoban.setCanvasSize();
 
@@ -525,7 +527,7 @@ var sokoban = {
 
         sokoban.plantGameLoop = new plant.GameLoop({
             scene: sokoban.scene,
-            interval: 150 
+            interval: 50 
         });
 
 
@@ -551,6 +553,7 @@ var sokoban = {
 };
 
 $.getScript("levels.js", function() {
+    sokoban.loadLevels();
     sokoban.loadLevel(sokoban.curLevel);
     sokoban.onLoad();
 });
