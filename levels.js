@@ -7,7 +7,6 @@
 // % player on spot
 
 sokoban.loadLevels = function() {
-    console.log("load levels");
     sokoban.levels =
     [
         [
