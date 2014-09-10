@@ -61,8 +61,8 @@ var sokoban = {
                 // load next level
                 sokoban.curLevel++;
                 sokoban.loadLevel(sokoban.curLevel);
-                var position = sokoban.getPlayerPosition();
-                sokoban.setPlayerPosition(position);
+                var positionNewLevel  = sokoban.getPlayerPosition();
+                sokoban.setPlayerPosition(positionNewLevel);
             }
         }
 
@@ -117,7 +117,7 @@ var sokoban = {
                     !isPushed
                     ) {
                         sokoban.level[curPosition.y-1][curPosition.x] = "-";
-                        sokoban.level[curPosition.y-2][curPosition.x] = "$"
+                        sokoban.level[curPosition.y-2][curPosition.x] = "$";
                         curPosition.y--;
                         sokoban.setPlayerPosition(curPosition);
                 }
@@ -186,7 +186,7 @@ var sokoban = {
                     !isPushed
                     ) {
                         sokoban.level[curPosition.y+1][curPosition.x] = "-";
-                        sokoban.level[curPosition.y+2][curPosition.x] = "$"
+                        sokoban.level[curPosition.y+2][curPosition.x] = "$";
                         curPosition.y++;
                         sokoban.setPlayerPosition(curPosition);
                         sokoban.renderView();
@@ -363,7 +363,7 @@ var sokoban = {
         
     },
 
-    renderView: function(options) {
+    renderView: function() {
         var htmlView = "";
 
         // render html view
@@ -497,7 +497,7 @@ var sokoban = {
     
     },
 
-    setCanvasSize: function(width, height) {
+    setCanvasSize: function() {
         var sceneWidth = sokoban.CELL_SIZE * sokoban.yLength; 
         var sceneHeight = sokoban.CELL_SIZE * sokoban.xLength; 
         sokoban.scene.htmlNode.width = sceneWidth;
