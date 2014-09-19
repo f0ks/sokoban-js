@@ -205,7 +205,18 @@ var sokoban = {
                 if (sokoban.level[curPosition.y+1][curPosition.x] === "$"
                     && sokoban.level[curPosition.y+2][curPosition.x] !== "D"
                 ) {
-                    sokoban.level[curPosition.y+2][curPosition.x] = "B";
+                    // push from spot to next spot
+                    if (sokoban.level[curPosition.y+2][curPosition.x] === "*")
+                    {
+                        sokoban.level[curPosition.y+2][curPosition.x] = "$";
+                    }
+
+                    // push from spot to empty cell
+                    if (sokoban.level[curPosition.y+2][curPosition.x] === "-")
+                    {
+                        sokoban.level[curPosition.y+2][curPosition.x] = "B";
+                    }
+
                     sokoban.isPushFromSpot = true;
                 }
 
@@ -370,7 +381,7 @@ var sokoban = {
         for (var i=0; i<sokoban.xLength; i++){
             for (var j=0; j<sokoban.yLength; j++){
                 htmlView += sokoban.level[i][j] + " "; 
-                if (j == 8) {
+                if (j == sokoban.level[i].length-1) {
                     htmlView += "<br>";
                 }
             }
