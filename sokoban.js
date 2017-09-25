@@ -544,9 +544,10 @@ var sokoban = {
 
         sokoban.plantGameLoop.code = function() {
             sokoban.scene.update();
+            requestAnimationFrame(sokoban.plantGameLoop.code);
         };
 
-        sokoban.plantGameLoop.start();
+        sokoban.plantGameLoop.start(sokoban.scene);
 
         sokoban.renderView();
 

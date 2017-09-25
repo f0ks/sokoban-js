@@ -3,10 +3,12 @@
 */
 
 var plant = {
+    _animFrame: null,
 
     Scene: function(options) {
 
         options = options || {};
+        this.useTimer = options.useTimer || false;
         this.width = options.width || 320;
         this.height = options.height || 320;
         this.background = options.background || 'black';
@@ -39,7 +41,7 @@ var plant = {
             this.htmlNode.width = this.width;
             this.htmlNode.height = this.height;
         } else {
-            throw new Error('Unable to get canvas context.');
+            throw new Error('Plant.js: Unable to get canvas context.');
         }
 
         var self = this;
@@ -49,7 +51,7 @@ var plant = {
             self.mouseX = e.clientX - self.htmlNode.offsetLeft;
             self.mouseY = e.clientY - self.htmlNode.offsetTop;
         }, false);
-        
+
         this._changeImageOpacity = function (imagenode, opacity) {
             if (this._processingCanvasNode.getContext) {
                 this._processingCanvasCtx = this._processingCanvasNode.getContext('2d');
@@ -65,16 +67,17 @@ var plant = {
                 this._processingCanvasCtx.drawImage(imagenode, 0, 0);
 
                 // export base64 encoded image data
-                var imgdata = this._processingCanvasNode.toDataURL("image/png");
+                var imgdata = this._processingCanvasNode.toDataURL('image/png');
 
                 return imgdata;
 
             } else {
-                throw new Error('Unable to get canvas context');
+                throw new Error('Plant.js: Unable to get canvas context');
             }
         };
 
-        // Check for click on canvas itself 
+
+        // Check for click on canvas itself
         // or on any object attached to current scene
         this.htmlNode.addEventListener('click', function(e) {
 
@@ -122,7 +125,7 @@ var plant = {
                     isCollision = false;
                 }
 
-                // if there is any collision, execute onClick function of 
+                // if there is any collision, execute onClick function of
                 // scene's child object clicked, if it defined (not null)
                 if (isCollision && T.onClick !== null) {
                     T.onClick();
@@ -136,13 +139,17 @@ var plant = {
         options = options || {};
         this.width = options.width || 50;
         this.height = options.height || 50;
-        this.color = options.color || 'white';
+
+        // plan works with hex colors, in full notation
+        this.color = options.color || '#ffffff';
+
         this.x = options.x || 0;
         this.y = options.y || 0;
         this.zindex = options.zindex || 1;
         this.visible = options.visible || true;
 
-        this.angle = options.angle || 0;
+
+        this.opacity = options.opacity || 1;
 
         // function expected
         this.onClick = null;
@@ -152,11 +159,14 @@ var plant = {
         options = options || {};
         this.width = options.width || 50;
         this.height = options.height || 50;
-        this.color = options.color || 'white';
+        this.color = options.color || '#ffffff';
         this.x = options.x || 0;
         this.y = options.y || 0;
         this.zindex = options.zindex || 1;
+
         this.visible = options.visible || true;
+
+        this.opacity = options.opacity || 1;
 
         this.onClick = null;
     },
@@ -165,7 +175,7 @@ var plant = {
 
         // src option required
         if (options.src === undefined){
-            throw new Error('resourse src is required');
+            throw new Error('Plant.js: resourse src required');
         } else {
             this.node = new Image();
             this.src = options.src;
@@ -185,9 +195,10 @@ var plant = {
         this.x = options.x || 0;
         this.y = options.y || 0;
 
+
         this.opacity = options.opacity || 1;
 
-        // save previous opacity value, watch for a change
+        // save previous opacity and angle values, watch for a change
         this._opacityCache = 1;
 
         this.zindex = options.zindex || 1;
@@ -203,7 +214,7 @@ var plant = {
     Text: function(options) {
         options = options || {};
         this.font = options.font || '10pt sans-serif';
-        this.color = options.color || 'white';
+        this.color = options.color || '#ffffff';
         this.x = options.x || 0;
         this.y = options.y || 0;
 
@@ -221,7 +232,7 @@ var plant = {
 
         // scene is required
         if (options.scene === undefined){
-            throw new Error('scene is required');
+            throw new Error('Plant.js: scene is required');
         } else {
             this.scene = options.scene;
         }
@@ -275,10 +286,10 @@ var plant = {
 
         arr.sort(function (a, b) {
             var i = 0;
-            while (i < len) { 
-                a = a[prop[i]]; 
-                b = b[prop[i]]; 
-                i++; 
+            while (i < len) {
+                a = a[prop[i]];
+                b = b[prop[i]];
+                i++;
             }
             if (a < b) {
                 return -1;
@@ -291,6 +302,23 @@ var plant = {
         return arr;
     },
 
+    _componentToHex: function(c) {
+        var hex = c.toString(16);
+        return hex.length == 1 ? '0' + hex : hex;
+    },
+
+    _rgbToHex: function(r, g, b) {
+        return '#' + this._componentToHex(r) + this._componentToHex(g) + this._componentToHex(b);
+    },
+
+    _hexToRgb: function(hex) {
+        var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result ? {
+            r: parseInt(result[1], 16),
+            g: parseInt(result[2], 16),
+            b: parseInt(result[3], 16)
+        } : null;
+    }
 
 };
 
@@ -303,7 +331,7 @@ plant.Scene.prototype.add = function(toAdd) {
             this.nodes.push(toAdd[i]);
         }
 
-    // single object
+        // single object
     } else {
         this.nodes.push(toAdd);
     }
@@ -324,31 +352,47 @@ plant.Scene.prototype.update = function() {
 
         var T = this.nodes[i];
         var ctx = this.context;
-        
+
         // don't render invisible objects
-        if (T.visible === true) {
+        if (T.visible) {
             switch (T.type()) {
 
                 case 'rectangle':
-                /*
-                    if (T.opacity !== 1) {
-                       ctx.fillStyle = "rgba(255, 255, 255, 0.5)"; 
+
+                    if (T.opacity >= 0 && T.opacity <= 1) {
+                        if (T.opacity < 1) {
+                            var r = plant._hexToRgb(T.color).r;
+                            var g = plant._hexToRgb(T.color).g;
+                            var b = plant._hexToRgb(T.color).b;
+                            ctx.fillStyle = 'rgba(' + r + ', ' + g + ', ' + b + ', ' + T.opacity + ')';
+                        } else {
+                            // opaque
+                            ctx.fillStyle = T.color;
+                        }
+                    } else {
+                        throw new Error('Plant.js: invalid opacity value');
                     }
-                */
 
-                    ctx.fillStyle = T.color;
-
-                    // if comment - interesting rotating effect discovered
-                    ctx.save();
-                    ctx.rotate(T.angle / 100);
                     ctx.fillRect(T.x, T.y, T.width, T.height);
-                    ctx.restore();
 
-            
-                break;
+
+                    break;
 
                 case 'ellipse':
-                    ctx.fillStyle = T.color;
+                    if (T.opacity >= 0 && T.opacity <= 1) {
+                        if (T.opacity < 1) {
+                            var r = plant._hexToRgb(T.color).r;
+                            var g = plant._hexToRgb(T.color).g;
+                            var b = plant._hexToRgb(T.color).b;
+                            ctx.fillStyle = 'rgba(' + r + ', ' + g + ', ' + b + ', ' + T.opacity + ')';
+                        } else {
+                            // opaque
+                            ctx.fillStyle = T.color;
+                        }
+                    } else {
+                        throw new Error('invalid opacity value');
+                    }
+
                     var kappa = .5522848;
                     var ox = (T.width / 2) * kappa;
                     var oy = (T.height / 2) * kappa;
@@ -365,7 +409,8 @@ plant.Scene.prototype.update = function() {
                     ctx.bezierCurveTo(xm - ox, ye, T.x, ym + oy, T.x, ym);
                     ctx.closePath();
                     ctx.fill();
-                break;
+                    //ctx.restore();
+                    break;
 
                 case 'sprite':
 
@@ -375,21 +420,26 @@ plant.Scene.prototype.update = function() {
                         T._opacityCache = T.opacity;
                     }
 
+
                     // find out what area of sprite we should draw
                     var sx = T.frameWidth * T.xFrame;
                     var sy = T.frameHeight * T.yFrame;
 
-                    // draw sprite
+                    ctx.save();
+
+
                     ctx.drawImage(T.node, sx, sy, T.frameWidth, T.frameHeight, T.x, T.y, T.width, T.height);
 
-                break;
+                    ctx.restore();
+
+                    break;
 
                 case 'text':
                     ctx.font = T.font;
                     ctx.fillStyle = T.color;
                     ctx.textBaseline = 'top';
                     ctx.fillText(T.text, T.x, T.y);
-                break;
+                    break;
 
             }
         }
@@ -417,24 +467,32 @@ plant.Text.prototype.type = function() {
     return 'text';
 };
 
-plant.GameLoop.prototype.start = function() {
-    if (!this._isActive) {
-        this.handle = setInterval(this.code, this.interval);
-        this._isActive = true;
-        return true;
+plant.GameLoop.prototype.start = function(scene) {
+    if (scene && !scene.useTimer) {
+        plant._animFrame = requestAnimationFrame(this.code);
     } else {
-        return false; 
+        if (!this._isActive) {
+            this.handle = setInterval(this.code, this.interval);
+            this._isActive = true;
+            return true;
+        } else {
+            return false;
+        }
     }
+
 };
 
-plant.GameLoop.prototype.stop = function() {
-    if (this._isActive) {
-        clearInterval(this.handle);
-        this._isActive = false;
-        return true;
+plant.GameLoop.prototype.stop = function(scene) {
+    if (scene && !scene.useTimer) {
+        cancelAnimationFrame(plant._animFrame);
     } else {
-        return false; 
+        if (this._isActive) {
+            clearInterval(this.handle);
+            this._isActive = false;
+            return true;
+        } else {
+            return false;
+        }
     }
 };
-
 
