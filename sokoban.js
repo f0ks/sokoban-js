@@ -1,3 +1,10 @@
+/*@TODO
+bugs:
+    1. 1-st level: box disappearing bug
+    2. 1-st level loads after all levels end without 1 box
+    3. spot blinking
+
+*/
 var sokoban = {
 
     CELL_SIZE: 30,
