@@ -5,6 +5,8 @@ bugs:
     3. spot blinking
 
 */
+
+"use strict";
 var sokoban = {
 
     CELL_SIZE: 30,
@@ -13,7 +15,7 @@ var sokoban = {
     isInitialized: false,
     curLevel: 0,
 
-    loadLevel: function(level) {
+    loadLevel: function (level) {
         sokoban.level = sokoban.levels[level];
         sokoban.xLength = sokoban.level.length;
         sokoban.yLength = sokoban.level[0].length;
@@ -25,9 +27,9 @@ var sokoban = {
         }
     },
 
-    getPlayerPosition: function() {
-        for (var i=0; i < sokoban.xLength; i++) {
-            for (var j=0; j < sokoban.yLength; j++) {
+    getPlayerPosition: function () {
+        for (var i = 0; i < sokoban.xLength; i++) {
+            for (var j = 0; j < sokoban.yLength; j++) {
                 if (sokoban.level[i][j] === "@" || sokoban.level[i][j] === "%") {
                     var position = {};
                     position.x = j;
@@ -39,11 +41,11 @@ var sokoban = {
 
     },
 
-    setPlayerPosition: function(position) {
+    setPlayerPosition: function (position) {
         // delete old player position from map array
         var numberOfBoxes = 0;
-        for (var i=0; i < sokoban.xLength; i++) {
-            for (var j=0; j < sokoban.yLength; j++){
+        for (var i = 0; i < sokoban.xLength; i++) {
+            for (var j = 0; j < sokoban.yLength; j++) {
                 if (sokoban.level[i][j] === "B") {
                     numberOfBoxes++;
                 }
@@ -59,7 +61,7 @@ var sokoban = {
 
         // check for win
         if (numberOfBoxes < 1) {
-            if (sokoban.curLevel == sokoban.levels.length-1) {
+            if (sokoban.curLevel === sokoban.levels.length - 1) {
                 // load first level 
                 sokoban.loadLevels();
                 sokoban.curLevel = 0;
@@ -68,168 +70,166 @@ var sokoban = {
                 // load next level
                 sokoban.curLevel++;
                 sokoban.loadLevel(sokoban.curLevel);
-                var positionNewLevel  = sokoban.getPlayerPosition();
+                var positionNewLevel = sokoban.getPlayerPosition();
                 sokoban.setPlayerPosition(positionNewLevel);
             }
         }
 
         // and set a new position
-        if (sokoban.isOnSpot){
+        if (sokoban.isOnSpot) {
             sokoban.level[position.y][position.x] = "%";
         } else if (sokoban.isPushFromSpot) {
             sokoban.level[position.y][position.x] = "%";
         } else {
             sokoban.level[position.y][position.x] = "@";
         }
-            
+
         sokoban.isOnSpot = false;
         sokoban.isPushFromSpot = false;
 
-            
+
         // and re-render the view
         sokoban.renderView();
     },
 
 
-    goUp: function() {
+    goUp: function () {
         sokoban._isLevelChanged = true;
-        var curPosition = sokoban.getPlayerPosition(); 
+        var curPosition = sokoban.getPlayerPosition();
         var isPushed = false;
 
         // check for upper map border
         if (curPosition.y > 0) {
 
             // check for obsticles
-            if (sokoban.level[curPosition.y-1][curPosition.x] !== "-" && 
-                sokoban.level[curPosition.y-1][curPosition.x] !== "*" &&
-                sokoban.level[curPosition.y-1][curPosition.x] !== "$"
+            if (sokoban.level[curPosition.y - 1][curPosition.x] !== "-" &&
+                sokoban.level[curPosition.y - 1][curPosition.x] !== "*" &&
+                sokoban.level[curPosition.y - 1][curPosition.x] !== "$"
 
             ) {
                 // box and empty space ahead
-                if (sokoban.level[curPosition.y-1][curPosition.x] === "B" &&
+                if (sokoban.level[curPosition.y - 1][curPosition.x] === "B" &&
                     curPosition.y - 1 > 0 &&
-                    sokoban.level[curPosition.y-2][curPosition.x] === "-"
-                     
-                    ) {
-                        sokoban.level[curPosition.y-1][curPosition.x] = "-";
-                        sokoban.level[curPosition.y-2][curPosition.x] = "B";
-                        curPosition.y--;
-                        sokoban.setPlayerPosition(curPosition);
-                        isPushed = true;
+                    sokoban.level[curPosition.y - 2][curPosition.x] === "-"
+
+                ) {
+                    sokoban.level[curPosition.y - 1][curPosition.x] = "-";
+                    sokoban.level[curPosition.y - 2][curPosition.x] = "B";
+                    curPosition.y--;
+                    sokoban.setPlayerPosition(curPosition);
+                    isPushed = true;
                 }
 
-                if (sokoban.level[curPosition.y-1][curPosition.x] === "B" &&
+                if (sokoban.level[curPosition.y - 1][curPosition.x] === "B" &&
                     curPosition.y - 1 > 0 &&
-                    sokoban.level[curPosition.y-2][curPosition.x] === "*" &&
+                    sokoban.level[curPosition.y - 2][curPosition.x] === "*" &&
                     !isPushed
-                    ) {
-                        sokoban.level[curPosition.y-1][curPosition.x] = "-";
-                        sokoban.level[curPosition.y-2][curPosition.x] = "$";
-                        curPosition.y--;
-                        sokoban.setPlayerPosition(curPosition);
+                ) {
+                    sokoban.level[curPosition.y - 1][curPosition.x] = "-";
+                    sokoban.level[curPosition.y - 2][curPosition.x] = "$";
+                    curPosition.y--;
+                    sokoban.setPlayerPosition(curPosition);
                 }
 
-            } 
-            
+            }
+
             else { // no obsticles on top
 
                 // move player to spot
-                if (sokoban.level[curPosition.y-1][curPosition.x] === "*") {
+                if (sokoban.level[curPosition.y - 1][curPosition.x] === "*") {
                     sokoban.isOnSpot = true;
                 }
-                if (sokoban.level[curPosition.y-1][curPosition.x] === "$"
-                && sokoban.level[curPosition.y-2][curPosition.x] !== "D"
+                if (sokoban.level[curPosition.y - 1][curPosition.x] === "$"
+                    && sokoban.level[curPosition.y - 2][curPosition.x] !== "D"
                 ) {
-                    sokoban.level[curPosition.y-2][curPosition.x] = "B";
+                    sokoban.level[curPosition.y - 2][curPosition.x] = "B";
                     sokoban.isPushFromSpot = true;
                 }
-                
+
                 // dont pushbox from spot into wall
-                if (sokoban.level[curPosition.y-1][curPosition.x] === "$"
-                    && sokoban.level[curPosition.y-2][curPosition.x] === "D"
+                if (sokoban.level[curPosition.y - 1][curPosition.x] === "$"
+                    && sokoban.level[curPosition.y - 2][curPosition.x] === "D"
                 ) {
                     curPosition.y++;
                 }
-  
+
                 curPosition.y--;
                 sokoban.setPlayerPosition(curPosition);
             }
-            
+
         }
 
         sokoban._isLevelChanged = true;
         sokoban.renderView();
     },
 
-    goDown: function() {
-        var curPosition = sokoban.getPlayerPosition(); 
+    goDown: function () {
+        var curPosition = sokoban.getPlayerPosition();
         var isPushed = false;
 
-        if (curPosition.y < sokoban.xLength-1) {
+        if (curPosition.y < sokoban.xLength - 1) {
             // check for obsticles
             if (
-                sokoban.level[curPosition.y+1][curPosition.x] !== "-" &&  
-                sokoban.level[curPosition.y+1][curPosition.x] !== "*" &&
-                sokoban.level[curPosition.y+1][curPosition.x] !== "$" 
+                sokoban.level[curPosition.y + 1][curPosition.x] !== "-" &&
+                sokoban.level[curPosition.y + 1][curPosition.x] !== "*" &&
+                sokoban.level[curPosition.y + 1][curPosition.x] !== "$"
 
             ) {
                 // box
-                if (sokoban.level[curPosition.y+1][curPosition.x] === "B" &&
+                if (sokoban.level[curPosition.y + 1][curPosition.x] === "B" &&
                     curPosition.y + 1 < sokoban.xLength - 1 &&
-                    sokoban.level[curPosition.y+2][curPosition.x] === "-"
-                     
-                    ) {
-                        sokoban.level[curPosition.y+1][curPosition.x] = "-";
-                        sokoban.level[curPosition.y+2][curPosition.x] = "B";
-                        curPosition.y++;
-                        sokoban.setPlayerPosition(curPosition);
-                        isPushed = true;
+                    sokoban.level[curPosition.y + 2][curPosition.x] === "-"
+
+                ) {
+                    sokoban.level[curPosition.y + 1][curPosition.x] = "-";
+                    sokoban.level[curPosition.y + 2][curPosition.x] = "B";
+                    curPosition.y++;
+                    sokoban.setPlayerPosition(curPosition);
+                    isPushed = true;
                 }
 
                 // push box to spot
-                if (sokoban.level[curPosition.y+1][curPosition.x] === "B" &&
+                if (sokoban.level[curPosition.y + 1][curPosition.x] === "B" &&
                     curPosition.y + 1 < sokoban.xLength - 1 &&
-                    sokoban.level[curPosition.y+2][curPosition.x] === "*" &&
+                    sokoban.level[curPosition.y + 2][curPosition.x] === "*" &&
                     !isPushed
-                    ) {
-                        sokoban.level[curPosition.y+1][curPosition.x] = "-";
-                        sokoban.level[curPosition.y+2][curPosition.x] = "$";
-                        curPosition.y++;
-                        sokoban.setPlayerPosition(curPosition);
-                        sokoban.renderView();
+                ) {
+                    sokoban.level[curPosition.y + 1][curPosition.x] = "-";
+                    sokoban.level[curPosition.y + 2][curPosition.x] = "$";
+                    curPosition.y++;
+                    sokoban.setPlayerPosition(curPosition);
+                    sokoban.renderView();
                 }
 
-            } 
+            }
 
 
             else { // no obsticles on top
 
                 // move player to spot
-                if (sokoban.level[curPosition.y+1][curPosition.x] === "*") {
+                if (sokoban.level[curPosition.y + 1][curPosition.x] === "*") {
                     sokoban.isOnSpot = true;
                 }
 
-                if (sokoban.level[curPosition.y+1][curPosition.x] === "$"
-                    && sokoban.level[curPosition.y+2][curPosition.x] !== "D"
+                if (sokoban.level[curPosition.y + 1][curPosition.x] === "$"
+                    && sokoban.level[curPosition.y + 2][curPosition.x] !== "D"
                 ) {
                     // push from spot to next spot
-                    if (sokoban.level[curPosition.y+2][curPosition.x] === "*")
-                    {
-                        sokoban.level[curPosition.y+2][curPosition.x] = "$";
+                    if (sokoban.level[curPosition.y + 2][curPosition.x] === "*") {
+                        sokoban.level[curPosition.y + 2][curPosition.x] = "$";
                     }
 
                     // push from spot to empty cell
-                    if (sokoban.level[curPosition.y+2][curPosition.x] === "-")
-                    {
-                        sokoban.level[curPosition.y+2][curPosition.x] = "B";
+                    if (sokoban.level[curPosition.y + 2][curPosition.x] === "-") {
+                        sokoban.level[curPosition.y + 2][curPosition.x] = "B";
                     }
 
                     sokoban.isPushFromSpot = true;
                 }
 
                 // dont pushbox from spot into wall
-                if (sokoban.level[curPosition.y+1][curPosition.x] === "$"
-                    && sokoban.level[curPosition.y+2][curPosition.x] === "D"
+                if (sokoban.level[curPosition.y + 1][curPosition.x] === "$"
+                    && sokoban.level[curPosition.y + 2][curPosition.x] === "D"
                 ) {
                     curPosition.y--;
                 }
@@ -243,65 +243,58 @@ var sokoban = {
         sokoban.renderView();
     },
 
-    goRight: function() {
-        var curPosition = sokoban.getPlayerPosition(); 
+    goRight: function () {
+        var curPosition = sokoban.getPlayerPosition();
         var isPushed = false;
 
         // check for map right border
-        if (curPosition.x < sokoban.yLength-1) {
+        if (curPosition.x < sokoban.yLength - 1) {
             // check for obsticles
-            if (sokoban.level[curPosition.y][curPosition.x+1] !== "-" && 
-                sokoban.level[curPosition.y][curPosition.x+1] !== "*" &&
-                sokoban.level[curPosition.y][curPosition.x+1] !== "$"
-                ){
+            if (sokoban.level[curPosition.y][curPosition.x + 1] !== "-" &&
+                sokoban.level[curPosition.y][curPosition.x + 1] !== "*" &&
+                sokoban.level[curPosition.y][curPosition.x + 1] !== "$"
+            ) {
                 // box
-                if (sokoban.level[curPosition.y][curPosition.x+1] === "B" &&
+                if (sokoban.level[curPosition.y][curPosition.x + 1] === "B" &&
                     curPosition.x + 1 > 0 &&
-                    sokoban.level[curPosition.y][curPosition.x+2] === "-"
-                     
-                    ) {
-                        sokoban.level[curPosition.y][curPosition.x+1] = "-";
-                        sokoban.level[curPosition.y][curPosition.x+2] = "B";
-                        curPosition.x++;
-                        sokoban.setPlayerPosition(curPosition);
-                        isPushed = true;
+                    sokoban.level[curPosition.y][curPosition.x + 2] === "-"
+
+                ) {
+                    sokoban.level[curPosition.y][curPosition.x + 1] = "-";
+                    sokoban.level[curPosition.y][curPosition.x + 2] = "B";
+                    curPosition.x++;
+                    sokoban.setPlayerPosition(curPosition);
+                    isPushed = true;
                 }
 
                 // push box to spot
-                if (sokoban.level[curPosition.y][curPosition.x+1] === "B" &&
+                if (sokoban.level[curPosition.y][curPosition.x + 1] === "B" &&
                     curPosition.x + 1 > 0 &&
-                    sokoban.level[curPosition.y][curPosition.x+2] === "*" &&
+                    sokoban.level[curPosition.y][curPosition.x + 2] === "*" &&
                     !isPushed
-                    ) {
-                        sokoban.level[curPosition.y][curPosition.x+1] = "-";
-                        sokoban.level[curPosition.y][curPosition.x+2] = "$";
-                        curPosition.x++;
-                        sokoban.setPlayerPosition(curPosition);
+                ) {
+                    sokoban.level[curPosition.y][curPosition.x + 1] = "-";
+                    sokoban.level[curPosition.y][curPosition.x + 2] = "$";
+                    curPosition.x++;
+                    sokoban.setPlayerPosition(curPosition);
                 }
 
             } else { // no obsticles at right
 
-
-
-
-
-
-
-
                 // move player to spot
-                if (sokoban.level[curPosition.y][curPosition.x+1] === "*") {
+                if (sokoban.level[curPosition.y][curPosition.x + 1] === "*") {
                     sokoban.isOnSpot = true;
                 }
-                if (sokoban.level[curPosition.y][curPosition.x+1] === "$" &&
-                    sokoban.level[curPosition.y][curPosition.x+2] !== "D"
+                if (sokoban.level[curPosition.y][curPosition.x + 1] === "$" &&
+                    sokoban.level[curPosition.y][curPosition.x + 2] !== "D"
                 ) {
-                    sokoban.level[curPosition.y][curPosition.x+2] = "B";
+                    sokoban.level[curPosition.y][curPosition.x + 2] = "B";
                     sokoban.isPushFromSpot = true;
                 }
 
                 // dont pushbox from spot into wall
-                if (sokoban.level[curPosition.y][curPosition.x+1] === "$" &&
-                    sokoban.level[curPosition.y][curPosition.x+2] === "D"
+                if (sokoban.level[curPosition.y][curPosition.x + 1] === "$" &&
+                    sokoban.level[curPosition.y][curPosition.x + 2] === "D"
                 ) {
                     curPosition.x--;
                 }
@@ -315,58 +308,58 @@ var sokoban = {
         sokoban.renderView();
     },
 
-    goLeft: function() {
-        var curPosition = sokoban.getPlayerPosition(); 
+    goLeft: function () {
+        var curPosition = sokoban.getPlayerPosition();
         var isPushed = false;
         if (curPosition.x > 0) {
             // check for obsticles
-            if (sokoban.level[curPosition.y][curPosition.x-1] !== "-" &&
-                sokoban.level[curPosition.y][curPosition.x-1] !== "*" &&
-                sokoban.level[curPosition.y][curPosition.x-1] !== "$"
+            if (sokoban.level[curPosition.y][curPosition.x - 1] !== "-" &&
+                sokoban.level[curPosition.y][curPosition.x - 1] !== "*" &&
+                sokoban.level[curPosition.y][curPosition.x - 1] !== "$"
             ) {
 
                 // push box to empty space
-                if (sokoban.level[curPosition.y][curPosition.x-1] === "B" &&
+                if (sokoban.level[curPosition.y][curPosition.x - 1] === "B" &&
                     curPosition.x - 1 > 0 &&
-                    sokoban.level[curPosition.y][curPosition.x-2] === "-" &&
-                    sokoban.level[curPosition.y][curPosition.x-2] !== "*"
-                    ) {
-                        sokoban.level[curPosition.y][curPosition.x-1] = "-";
-                        sokoban.level[curPosition.y][curPosition.x-2] = "B";
-                        curPosition.x--;
-                        isPushed = true;
-                        sokoban.setPlayerPosition(curPosition);
+                    sokoban.level[curPosition.y][curPosition.x - 2] === "-" &&
+                    sokoban.level[curPosition.y][curPosition.x - 2] !== "*"
+                ) {
+                    sokoban.level[curPosition.y][curPosition.x - 1] = "-";
+                    sokoban.level[curPosition.y][curPosition.x - 2] = "B";
+                    curPosition.x--;
+                    isPushed = true;
+                    sokoban.setPlayerPosition(curPosition);
                 }
 
                 // push box to spot
-                if (sokoban.level[curPosition.y][curPosition.x-1] === "B" &&
-                    sokoban.level[curPosition.y][curPosition.x-2] === "*" &&
+                if (sokoban.level[curPosition.y][curPosition.x - 1] === "B" &&
+                    sokoban.level[curPosition.y][curPosition.x - 2] === "*" &&
                     !isPushed
-                    ) {
-                        sokoban.level[curPosition.y][curPosition.x-1] = "-";
-                        sokoban.level[curPosition.y][curPosition.x-2] = "$";
-                        curPosition.x--;
-                        sokoban.setPlayerPosition(curPosition);
+                ) {
+                    sokoban.level[curPosition.y][curPosition.x - 1] = "-";
+                    sokoban.level[curPosition.y][curPosition.x - 2] = "$";
+                    curPosition.x--;
+                    sokoban.setPlayerPosition(curPosition);
                 }
 
             }
-            
+
             else {
 
                 // move player to spot
-                if (sokoban.level[curPosition.y][curPosition.x-1] === "*") {
+                if (sokoban.level[curPosition.y][curPosition.x - 1] === "*") {
                     sokoban.isOnSpot = true;
                 }
-                if (sokoban.level[curPosition.y][curPosition.x-1] === "$" &&
-                    sokoban.level[curPosition.y][curPosition.x-2] !== "D"
+                if (sokoban.level[curPosition.y][curPosition.x - 1] === "$" &&
+                    sokoban.level[curPosition.y][curPosition.x - 2] !== "D"
                 ) {
-                    sokoban.level[curPosition.y][curPosition.x-2] = "B";
+                    sokoban.level[curPosition.y][curPosition.x - 2] = "B";
                     sokoban.isPushFromSpot = true;
                 }
 
                 // dont pushbox from spot into wall
-                if (sokoban.level[curPosition.y][curPosition.x-1] === "$" &&
-                    sokoban.level[curPosition.y][curPosition.x-2] === "D"
+                if (sokoban.level[curPosition.y][curPosition.x - 1] === "$" &&
+                    sokoban.level[curPosition.y][curPosition.x - 2] === "D"
                 ) {
                     curPosition.x++;
                 }
@@ -378,17 +371,17 @@ var sokoban = {
         sokoban._isLevelChanged = true;
         sokoban.renderView();
 
-        
+
     },
 
-    renderView: function() {
+    renderView: function () {
         var htmlView = "";
 
         // render html view
-        for (var i=0; i<sokoban.xLength; i++){
-            for (var j=0; j<sokoban.yLength; j++){
-                htmlView += sokoban.level[i][j] + " "; 
-                if (j == sokoban.level[i].length-1) {
+        for (var i = 0; i < sokoban.xLength; i++) {
+            for (var j = 0; j < sokoban.yLength; j++) {
+                htmlView += sokoban.level[i][j] + " ";
+                if (j === sokoban.level[i].length - 1) {
                     htmlView += "<br>";
                 }
             }
@@ -396,7 +389,7 @@ var sokoban = {
         $('code').html(htmlView);
 
         // render canvas view
-        var curPosition = sokoban.getPlayerPosition(); 
+        var curPosition = sokoban.getPlayerPosition();
         sokoban.player.x = curPosition.x * sokoban.CELL_SIZE;
         sokoban.player.y = curPosition.y * sokoban.CELL_SIZE;
 
@@ -406,7 +399,7 @@ var sokoban = {
 
     },
 
-    updateCanvasView: function() {
+    updateCanvasView: function () {
 
         sokoban._isLevelChanged = false;
 
@@ -423,8 +416,8 @@ var sokoban = {
 
         sokoban.scene.add(sokoban.player);
 
-        for (var i=0; i<sokoban.xLength; i++){
-            for (var j=0; j<sokoban.yLength; j++){
+        for (var i = 0; i < sokoban.xLength; i++) {
+            for (var j = 0; j < sokoban.yLength; j++) {
                 var cur_x = j * sokoban.CELL_SIZE;
                 var cur_y = i * sokoban.CELL_SIZE;
 
@@ -438,14 +431,14 @@ var sokoban = {
                 sokoban.scene.add(bg_blocks[bg_blocks.length - 1]);
 
                 // box
-                if (sokoban.level[i][j] == "B") {
+                if (sokoban.level[i][j] === "B") {
                     var box = new plant.Sprite({
                         src: "gfx/box.png",
                         zindex: 10,
                         x: cur_x,
                         y: cur_y
                     });
-                    
+
                     box.xCell = j;
                     box.yCell = i;
 
@@ -454,14 +447,14 @@ var sokoban = {
                 }
 
                 // grass
-                if (sokoban.level[i][j] == "G") {
+                if (sokoban.level[i][j] === "G") {
                     var grass = new plant.Sprite({
                         src: "gfx/grass.png",
                         zindex: 10,
                         x: cur_x,
                         y: cur_y
                     });
-                    
+
                     grass.xCell = j;
                     grass.yCell = i;
 
@@ -469,14 +462,14 @@ var sokoban = {
                     sokoban.scene.add(sokoban.grass[sokoban.grass.length - 1]);
                 }
                 // block
-                if (sokoban.level[i][j] == "D") {
+                if (sokoban.level[i][j] === "D") {
                     var block = new plant.Sprite({
                         src: "gfx/block.png",
                         zindex: 10,
                         x: cur_x,
                         y: cur_y
                     });
-                    
+
                     block.xCell = j;
                     block.yCell = i;
 
@@ -485,7 +478,7 @@ var sokoban = {
                 }
 
                 // spot
-                if (sokoban.level[i][j] == "*") {
+                if (sokoban.level[i][j] === "*") {
                     var spot = new plant.Sprite({
                         src: "gfx/spot.png",
                         x: cur_x,
@@ -498,7 +491,7 @@ var sokoban = {
                 }
 
                 // box on spot
-                if (sokoban.level[i][j] == "$") {
+                if (sokoban.level[i][j] === "$") {
                     var bspot = new plant.Sprite({
                         src: "gfx/bspot.png",
                         x: cur_x,
@@ -512,25 +505,25 @@ var sokoban = {
                 }
             }
         }
-    
+
     },
 
-    setCanvasSize: function() {
-        var sceneWidth = sokoban.CELL_SIZE * sokoban.yLength; 
-        var sceneHeight = sokoban.CELL_SIZE * sokoban.xLength; 
+    setCanvasSize: function () {
+        var sceneWidth = sokoban.CELL_SIZE * sokoban.yLength;
+        var sceneHeight = sokoban.CELL_SIZE * sokoban.xLength;
         sokoban.scene.htmlNode.width = sceneWidth;
         sokoban.scene.htmlNode.height = sceneHeight;
     },
 
-    onLoad: function() {
+    onLoad: function () {
 
 
         sokoban.scene = new plant.Scene();
         sokoban.setCanvasSize();
 
         // calculate player's position on canvas
-         
-        var curPosition = sokoban.getPlayerPosition(); 
+
+        var curPosition = sokoban.getPlayerPosition();
         sokoban.curPositionCanvX = curPosition.x * sokoban.CELL_SIZE;
         sokoban.curPositionCanvY = curPosition.y * sokoban.CELL_SIZE;
 
@@ -545,11 +538,11 @@ var sokoban = {
 
         sokoban.plantGameLoop = new plant.GameLoop({
             scene: sokoban.scene,
-            interval: 50 
+            interval: 50
         });
 
 
-        sokoban.plantGameLoop.code = function() {
+        sokoban.plantGameLoop.code = function () {
             sokoban.scene.update();
             requestAnimationFrame(sokoban.plantGameLoop.code);
         };
@@ -562,16 +555,24 @@ var sokoban = {
 
     },
 
-    keyDown: function(e) {
-        if (e.keyCode === 38) { sokoban.goUp() }
-        if (e.keyCode === 37) { sokoban.goLeft() }
-        if (e.keyCode === 39) { sokoban.goRight() }
-        if (e.keyCode === 40) { sokoban.goDown() }
+    keyDown: function (e) {
+        if (e.keyCode === 38) {
+            sokoban.goUp()
+        }
+        if (e.keyCode === 37) {
+            sokoban.goLeft()
+        }
+        if (e.keyCode === 39) {
+            sokoban.goRight()
+        }
+        if (e.keyCode === 40) {
+            sokoban.goDown()
+        }
     }
-    
+
 };
 
-$.getScript("levels.js", function() {
+$.getScript("levels.js", function () {
     sokoban.loadLevels();
     sokoban.loadLevel(sokoban.curLevel);
     sokoban.onLoad();
